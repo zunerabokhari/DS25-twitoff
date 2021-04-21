@@ -12,6 +12,7 @@ class User(DB.Model):
     id = DB.Column(DB.BigInteger, primary_key=True)
     # name column
     name = DB.Column(DB.String, nullable=False)
+    newest_tweet_id = DB.Column(DB.BigInteger)
 
     def __repr__(self):
         return "<User: {}>".format(self.name)
@@ -22,12 +23,20 @@ class Tweet(DB.Model):
     # id column
     text = DB.Column(DB.Unicode(300))
     # tweet text column - allows for emojis and other characters (only up to 300 characs)
-    user_id = DB.Column(DB.BigInteger,
-            DB.ForeignKey("user.id"), nullable=False)
+    vect = DB.Column(DB.PickleType, nullable=False)
+    user_id = DB.Column(DB.BigInteger, DB.ForeignKey("user.id"), nullable=False)
             # user_id column (user that corresponds to specific tweet)
     user = DB.relationship("User", backref=DB.backref("tweets", lazy=True))
     # creates link between user and tweets
 
     def __repr__(self):
-        return "<Tweet: {}>".format(self.text)
-    
+        return "<Tweet: '{}'>".format(self.text)
+
+
+# def insert_example_users():
+# # inserts hypothetical users that we've made 
+#     zunera = User(id=1, name="Zunera")
+#     elonmusk = User(id=2, name="Elon Musk")
+#     DB.session.add(zunera)
+#     DB.session.add(elonmusk)
+#     DB.session.commit() 
