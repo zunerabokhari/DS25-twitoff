@@ -12,31 +12,29 @@ class User(DB.Model):
     id = DB.Column(DB.BigInteger, primary_key=True)
     # name column
     name = DB.Column(DB.String, nullable=False)
+    # keeps track of id for the newest tweet said by user
     newest_tweet_id = DB.Column(DB.BigInteger)
 
     def __repr__(self):
         return "<User: {}>".format(self.name)
 
+
 class Tweet(DB.Model):
     """Keeps track of Tweets for each user"""
     id = DB.Column(DB.BigInteger, primary_key=True)
-    # id column
-    text = DB.Column(DB.Unicode(300))
-    # tweet text column - allows for emojis and other characters (only up to 300 characs)
+    text = DB.Column(DB.Unicode(300))  # allows for text and links
     vect = DB.Column(DB.PickleType, nullable=False)
-    user_id = DB.Column(DB.BigInteger, DB.ForeignKey("user.id"), nullable=False)
-            # user_id column (user that corresponds to specific tweet)
-    user = DB.relationship("User", backref=DB.backref("tweets", lazy=True))
-    # creates link between user and tweets
+    user_id = DB.Column(DB.BigInteger, DB.ForeignKey(
+        'user.id'), nullable=False)
+    user = DB.relationship('User', backref=DB.backref('tweets', lazy=True))
 
     def __repr__(self):
-        return "<Tweet: '{}'>".format(self.text)
+        return "<Tweet: {}>".format(self.text)
 
 
-# def insert_example_users():
-# # inserts hypothetical users that we've made 
-#     zunera = User(id=1, name="Zunera")
-#     elonmusk = User(id=2, name="Elon Musk")
-#     DB.session.add(zunera)
-#     DB.session.add(elonmusk)
-#     DB.session.commit() 
+CREATE_USER_TABLE_SQL = """
+  CREATE TABLE IF NOT EXIST user (
+    id INT PRIMARY,
+    name STRING NOT NULL
+  );
+"""
